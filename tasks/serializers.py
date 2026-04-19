@@ -35,11 +35,20 @@ class TaskSerializer(serializers.ModelSerializer):
     category_detail: CategorySerializer
     status_display: serializers.CharField
     priority_display: serializers.CharField
+    is_overdue: serializers.SerializerMethodField
     built-ins:
-        - <field>_display: serializers.CharField
+        - get_<field>_display: serializers.CharField
     methods:
         - func(): serializers.SerializerMethodField
     """
+    category_detail = CategorySerializer(source="category", read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True
+    )
+    priority_display = serializers.CharField(
+        source='get_priority_display', read_only=True
+    )
+    is_overdue = serializers.SerializerMethodField()
 
     class Meta:
         """
@@ -47,6 +56,31 @@ class TaskSerializer(serializers.ModelSerializer):
         fields: list[str]
         read_only_fields: list[str]
         """
+        model = Task
+        fields = [
+            "id",
+            "title",
+            "description",
+            "status",
+            "status_display",    # Human-readable status
+            "priority",
+            "priority_display",  # Human-readable priority
+            "due_date",
+            "is_overdue",        # Computed: is the deadline past?
+            "category",          # Write field: accepts category ID
+            "category_detail",   # Read field: returns full category object
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "status_display",
+            "priority_display",
+            "is_overdue",
+            "category_detail",
+            "created_at",
+            "updated_at",
+        ]
 
     def get_is_overdue(self, obj: Task) -> bool:
         """
