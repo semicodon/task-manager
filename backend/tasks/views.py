@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from tasks.models import Category, Task
-from tasks.serializers import CategorySerializer, TaskListSerializer, TaskSerializer
+from backend.tasks.models import Category, Task
+from backend.tasks.serializers import CategorySerializer, TaskListSerializer, TaskSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
