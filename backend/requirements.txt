@@ -21,3 +21,8 @@ django-filter==24.3
 
 # CORS Headers — allows your future React frontend to call this API
 django-cors-headers==4.4.0
+
+axios
+
+typescript
+
