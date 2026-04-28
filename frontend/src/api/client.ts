@@ -47,7 +47,7 @@ export class ApiClient {
             }
         })
         this.registerInterceptors()
-        
+
     }
 
     // Register REQUEST & RESPONSE Interceptors
@@ -138,5 +138,4 @@ export class ApiClient {
 }
 
 // -- Singleton Export --
-// @ts-ignore
-export const apiClient = new ApiClient(import.meta.env.DEV)
+export const apiClient = new ApiClient(import.meta.env.VITE_API_BASE_URL)

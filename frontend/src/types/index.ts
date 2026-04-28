@@ -69,6 +69,7 @@ export interface TaskListItem {
     priority: TaskPriority
     due_date: string | null
     category: number | null
+    category_name: string | null
     category_color: string | null
     created_at: string
 }
