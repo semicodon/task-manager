@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     "rest_framework",   # Django REST Framework
     "django_filters",   # Enables ?status=todo URL filtering
     "corsheaders",      # Allows React frontend to call this API
-    "tasks",
+    "tasks.apps.TasksConfig",
 ]
 
 
@@ -39,7 +39,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "backend.task_manager.urls"
+ROOT_URLCONF = "task_manager.urls"
 
 TEMPLATES = [
     {

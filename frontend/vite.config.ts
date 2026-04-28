@@ -1,17 +1,22 @@
-/// <reference types="vite/client" />
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+  server: {
+    port: 5173,
+    proxy: {
+      // Any request the browser makes to http://localhost:5173/api/*
+      // will be silently forwarded to http://localhost:8000/api/*
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true, // Rewrites the Host header. Django sees requests as if they came in locally.
+      },
+    },
+  },
 })
-interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL: string
-}
-
-// @ts-ignore
-interface ImportMeta {
-  readonly env: ImportMetaEnv
-}
