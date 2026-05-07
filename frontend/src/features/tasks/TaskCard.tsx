@@ -5,6 +5,7 @@ import { cn } from '../../lib/cn'
 export interface TaskCardProps {
   task: TaskListItem
   onMarkDone?: (id: number) => void
+  onEdit?: (id: number) => void
   onDelete?: (id: number) => void
   isBusy?: boolean
 }
