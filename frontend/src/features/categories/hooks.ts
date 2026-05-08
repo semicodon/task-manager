@@ -1,5 +1,5 @@
 
-import { useQuery } from '@tanstackk/react-query'
+import { useQuery } from '@tanstack/react-query'
 import * as categoriesApi from '../../api/categories'
 
 // Cache key factory
