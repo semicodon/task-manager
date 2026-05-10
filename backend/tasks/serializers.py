@@ -111,7 +111,7 @@ class TaskSerializer(serializers.ModelSerializer):
         - auto called on post-validation of all fields
         """
         if 'due_date' in data and data['due_date']:
-            if data['due_date'] < timezone.now():
+            if data['due_date'] < timezone.now().date():
                 if not self.instance:
                     raise serializers.ValidationError(
                         {"due_date": "Due date cannot be in the past for a new task."}
