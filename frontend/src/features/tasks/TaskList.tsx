@@ -1,10 +1,11 @@
-
 import { useState } from 'react'
 
 import { Spinner } from '../../components/Spinner'
 import { ErrorBanner } from '../../components/ErrorBanner'
 import { EmptyState } from '../../components/EmptyState'
+import { Modal } from '../../components/Modal'
 import { TaskCard } from './TaskCard'
+import { TaskForm } from './TaskForm'
 import {
   useTasks,
   useTask,
@@ -12,9 +13,7 @@ import {
   useDeleteTask,
 } from './hooks'
 import type { TaskListParams } from '../../api/tasks'
-import type {TaskListItem, TaskStatus} from '../../types'
-import {TaskForm} from "./TaskForm.tsx";
-import {Modal} from "../../components/Modal.tsx";
+import type { TaskStatus } from '../../types'
 
 const STATUS_TABS: Array<{ label: string; value?: TaskStatus }> = [
   { label: 'All' },                          // undefined → no filter
@@ -23,65 +22,60 @@ const STATUS_TABS: Array<{ label: string; value?: TaskStatus }> = [
   { label: 'Done', value: 'done' },
 ]
 
-export function TaskList() {
+export interface TaskListProps {
+  categoryFilter?: number | null
+}
+
+export function TaskList({ categoryFilter }: TaskListProps = {}) {
+
   const [statusFilter, setStatusFilter] = useState<TaskStatus | undefined>()
-  const filters: TaskListParams = statusFilter ? { status: statusFilter } : {}
 
-  // Form Modal State
   const [formOpen, setFormOpen] = useState(false)
-  const [editingTaskId, setEditingTaskId] = useState<number | null> (null)
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isFetching,
-  } = useTasks(filters)
+  const filters: TaskListParams = {
+    ...(statusFilter && { status: statusFilter }),
+    ...(categoryFilter && { category: categoryFilter }),
+  }
 
+  const { data, isLoading, isError, error, refetch, isFetching } = useTasks(filters)
   const markDone = useMarkTaskDone()
   const deleteTask = useDeleteTask()
   const editingTaskQuery = useTask(editingTaskId ?? 0)
-
-  // Handlers
   const handleNewTask = () => {
-    setEditingTaskId(null)
+    setEditingTaskId(null)   // null → create mode
     setFormOpen(true)
   }
-  const handleEditTask = (id: number)=> {
-    setEditingTaskId(id)
+  const handleEditTask = (id: number) => {
+    setEditingTaskId(id)     // number → edit mode 
     setFormOpen(true)
   }
   const handleCloseForm = () => {
     setFormOpen(false)
   }
 
+
   // Status filter buttons
-  const statusButtons = STATUS_TABS.map(
-    (tab) => {
-      const active = tab.value === statusFilter
-      return (
-        <button
-          key={tab.label}
-          type='button'
-          role='tab'
-          aria-selected={active}
-          onClick={
-            () => setStatusFilter(tab.value)
-          }
-          className={
-            'rounded-md px-3 py-1 font-medium transition ' +
-            (active
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-600 hover:bg-slate-100')
-          }
-          >
-          {tab.label}
-        </button>
-      )
-    }
-  )
+  const statusButtons = STATUS_TABS.map((tab) => {
+    const active = tab.value === statusFilter
+    return (
+      <button
+        key={tab.label}
+        type="button"
+        role="tab"
+        aria-selected={active}
+        onClick={() => setStatusFilter(tab.value)}
+        className={
+          'rounded-md px-3 py-1 font-medium transition ' +
+          (active
+            ? 'bg-slate-900 text-white'
+            : 'text-slate-600 hover:bg-slate-100')
+        }
+      >
+        {tab.label}
+      </button>
+    )
+  })
 
   // Loading state
   const loadingSpinner = isLoading && (
@@ -96,75 +90,62 @@ export function TaskList() {
   )
 
   // Empty state
-  const emptyState = !isLoading && !isError && data && data.results.length === 0 && (
-    <EmptyState
-      title='No tasks yet'
-      description={
-        statusFilter
-        ? `No tasks with status "${statusFilter}". Try a different filter.`
-        : 'Click "+ New Task" above to create your first one.'
-      }
-      action={
-        !statusFilter && (
-          <button
-            type="button"
-            onClick={handleNewTask}
-            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
-          >
-            + New Task
-          </button>
-        )
-      }
-      />
-  )
-
-  // Task card item
-  const taskCard = (task: TaskListItem) => {
-    return<TaskCard
-        task={task}
-        onMarkDone={
-          (id: number) => markDone.mutate(id)
+  const emptyState =
+    !isLoading && !isError && data && data.results.length === 0 && (
+      <EmptyState
+        title="No tasks yet"
+        description={
+          statusFilter
+            ? `No tasks with status "${statusFilter}". Try a different filter.`
+            : 'Click "+ New Task" above to create your first one.'
         }
-        onEdit={handleEditTask}
-        onDelete={
-          (id: number) => {
-            if (confirm('Delete this task? This cannot be undone.')) {
-              deleteTask.mutate(id)
-            }
-          }
-        }
-        isBusy={
-          markDone.isPending ||
-          deleteTask.isPending
+        action={
+          !statusFilter && (
+            <button
+              type="button"
+              onClick={handleNewTask}
+              className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+            >
+              + New Task
+            </button>
+          )
         }
       />
-  }
+    )
 
   // Task list
-  const taskList = !isLoading && !isError && data && data.results.length > 0 && (
-    <ul className='space-y-3'>
-      {data.results.map((task) => (
-        <li key={task.id}>
-          {taskCard(task)}
-        </li>
-      ))}
-    </ul>
-  )
+  const taskList =
+    !isLoading && !isError && data && data.results.length > 0 && (
+      <ul className="space-y-3">
+        {data.results.map((task) => (
+          <li key={task.id}>
+            <TaskCard
+              task={task}
+              onMarkDone={(id) => markDone.mutate(id)}
+              onEdit={handleEditTask}
+              onDelete={(id) => {
+                if (confirm('Delete this task? This cannot be undone.')) {
+                  deleteTask.mutate(id)
+                }
+              }}
+              isBusy={markDone.isPending || deleteTask.isPending}
+            />
+          </li>
+        ))}
+      </ul>
+    )
 
-  // Header new task button
   const newTaskButton = (
     <button
-      type='button'
+      type="button"
       onClick={handleNewTask}
       className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
-      >
+    >
       + New Task
-      </button>
+    </button>
   )
 
-  const modalContent = ( () => {
-
-    // 1. Create mode: render form with no task prop.
+  const modalContent = (() => {
     if (editingTaskId === null) {
       return (
         <TaskForm
@@ -173,17 +154,13 @@ export function TaskList() {
         />
       )
     }
-
-    // 2. Edit mode + loading: render a spinner
     if (editingTaskQuery.isLoading || !editingTaskQuery.data) {
       return (
         <div className="flex justify-center p-6">
           <Spinner label="Loading task…" />
         </div>
-        )
+      )
     }
-
-    // 3. Edit mode + loaded: render form with task prop.
     return (
       <TaskForm
         task={editingTaskQuery.data}
@@ -209,7 +186,6 @@ export function TaskList() {
 
   return (
     <section className="space-y-4">
-      {/* Header with filter tabs + New Task button */}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">Tasks</h2>
@@ -230,14 +206,11 @@ export function TaskList() {
         </div>
       </header>
 
-      {/* State-based UI branches */}
       {loadingSpinner}
       {errorMessage}
       {emptyState}
       {taskList}
       {refreshingIndicator}
-
-      {/* Modal lives at the section root so it can be open over any state */}
       {formModal}
     </section>
   )
