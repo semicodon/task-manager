@@ -195,7 +195,7 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
   )
 }
 
-function buildDefaults(task?: Task): TaskFormValues {
+export function buildDefaults(task?: Task): TaskFormValues {
   if (!task) {
     return {
       title: '',
@@ -216,7 +216,7 @@ function buildDefaults(task?: Task): TaskFormValues {
   }
 }
 
-function toApiPayload(values: TaskFormValues): TaskCreatePayload & TaskUpdatePayload {
+export function toApiPayload(values: TaskFormValues): TaskCreatePayload & TaskUpdatePayload {
   return {
     title: values.title.trim(),
     description: values.description.trim(),

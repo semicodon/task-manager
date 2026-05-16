@@ -50,7 +50,7 @@ export interface Task {
     status_display: string
     priority: TaskPriority
     priority_display: string
-    due_date: string
+    due_date: string | null
     is_overdue: boolean
     category: number | null
     category_detail: Category | null
