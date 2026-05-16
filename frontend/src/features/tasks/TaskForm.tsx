@@ -6,7 +6,7 @@ import { useCreateTask, useUpdateTask } from './hooks'
 import { useCategories } from '../categories/hooks'
 import type { Task, TaskCreatePayload, TaskUpdatePayload, Category } from '../../types'
 import type { ApiError } from '../../api/client'
-import {zodResolver} from '@hookform/resolvers/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export interface TaskFormProps {
   task?: Task
@@ -15,7 +15,6 @@ export interface TaskFormProps {
 }
 
 export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
-
   const form = useForm({
     resolver: zodResolver(TaskFormSchema),
     defaultValues: buildDefaults(task),
@@ -49,15 +48,10 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
 
       if (apiError.fieldErrors) {
         for (const [field, messages] of Object.entries(apiError.fieldErrors)) {
-          form.setError(
-            field as keyof TaskFormValues,
-            {
-              type: 'server',
-              message: Array.isArray(messages)
-                ? messages.join(' ')
-                : String(messages),
-            }
-          )
+          form.setError(field as keyof TaskFormValues, {
+            type: 'server',
+            message: Array.isArray(messages) ? messages.join(' ') : String(messages),
+          })
         }
       } else {
         form.setError('root', { type: 'server', message: apiError.message })
@@ -88,8 +82,8 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           Title <span className="text-red-500">*</span>
         </label>
         <input
-          type='text'
-          id='title'
+          type="text"
+          id="title"
           autoFocus
           placeholder="What needs doing?"
           className={inputClass}
@@ -116,7 +110,9 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
       {/* Status + Priority */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="status" className={labelClass}>Status</label>
+          <label htmlFor="status" className={labelClass}>
+            Status
+          </label>
           <select id="status" className={inputClass} {...form.register('status')}>
             <option value="todo">To Do</option>
             <option value="in_progress">In Progress</option>
@@ -125,7 +121,9 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           {errorFor('status')}
         </div>
         <div>
-          <label htmlFor="priority" className={labelClass}>Priority</label>
+          <label htmlFor="priority" className={labelClass}>
+            Priority
+          </label>
           <select id="priority" className={inputClass} {...form.register('priority')}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -138,7 +136,9 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
       {/* Due date + Category */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="due_date" className={labelClass}>Due date</label>
+          <label htmlFor="due_date" className={labelClass}>
+            Due date
+          </label>
           <input
             id="due_date"
             type="date"
@@ -148,7 +148,9 @@ export function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           {errorFor('due_date')}
         </div>
         <div>
-          <label htmlFor="category" className={labelClass}>Category</label>
+          <label htmlFor="category" className={labelClass}>
+            Category
+          </label>
           <select
             id="category"
             className={inputClass}
@@ -216,7 +218,9 @@ export function buildDefaults(task?: Task): TaskFormValues {
   }
 }
 
-export function toApiPayload(values: TaskFormValues): TaskCreatePayload & TaskUpdatePayload {
+export function toApiPayload(
+  values: TaskFormValues,
+): TaskCreatePayload & TaskUpdatePayload {
   return {
     title: values.title.trim(),
     description: values.description.trim(),

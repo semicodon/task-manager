@@ -4,7 +4,6 @@
  * serializer & interface
  */
 
-
 // ─── Category ────────────────────────────────────────────────────────────────
 
 /**
@@ -12,18 +11,18 @@
  * - interface Category
  */
 export interface Category {
-    id: number
-    name: string
-    description: string
-    color: string
-    task_count: number
-    created_at: string
+  id: number
+  name: string
+  description: string
+  color: string
+  task_count: number
+  created_at: string
 }
 
 /**
  * Category Payloads
  * - type CategoryCreatePayload
-* - type    `!
+ * - type    `!
  */
 export type CategoryCreatePayload = Pick<Category, 'name' | 'description' | 'color'>
 export type CategoryUpdatePayload = Partial<CategoryCreatePayload>
@@ -43,19 +42,19 @@ export type TaskPriority = 'low' | 'medium' | 'high'
  * - interface Task
  */
 export interface Task {
-    id: number
-    title: string
-    description: string
-    status: TaskStatus
-    status_display: string
-    priority: TaskPriority
-    priority_display: string
-    due_date: string | null
-    is_overdue: boolean
-    category: number | null
-    category_detail: Category | null
-    created_at: string
-    updated_at: string
+  id: number
+  title: string
+  description: string
+  status: TaskStatus
+  status_display: string
+  priority: TaskPriority
+  priority_display: string
+  due_date: string | null
+  is_overdue: boolean
+  category: number | null
+  category_detail: Category | null
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -63,15 +62,15 @@ export interface Task {
  * - interface TaskListItem
  */
 export interface TaskListItem {
-    id: number
-    title: string
-    status: TaskStatus
-    priority: TaskPriority
-    due_date: string | null
-    category: number | null
-    category_name: string | null
-    category_color: string | null
-    created_at: string
+  id: number
+  title: string
+  status: TaskStatus
+  priority: TaskPriority
+  due_date: string | null
+  category: number | null
+  category_name: string | null
+  category_color: string | null
+  created_at: string
 }
 
 /**
@@ -80,24 +79,22 @@ export interface TaskListItem {
  * - type TaskUpdatePayload
  */
 export interface TaskCreatePayload {
-    title: string
-    description?: string
-    status?: TaskStatus
-    priority?: TaskPriority
-    due_date?: string | null
-    category?: number | null
+  title: string
+  description?: string
+  status?: TaskStatus
+  priority?: TaskPriority
+  due_date?: string | null
+  category?: number | null
 }
 export type TaskUpdatePayload = Partial<TaskCreatePayload>
-
-
 
 // ─── Paginated Responses ────────────────────────────────────────────────────────────────
 /**
  * interface Paginated
  */
-export interface Paginated<T>{
-    count: number
-    next: string | null
-    previous: string | null
-    results: T[]
+export interface Paginated<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
 }

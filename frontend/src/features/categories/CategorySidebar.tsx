@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 
 import { Spinner } from '../../components/Spinner'
@@ -7,22 +6,14 @@ import { EmptyState } from '../../components/EmptyState'
 import { Modal } from '../../components/Modal'
 import { CategoryItem } from './CategoryItem'
 import { CategoryForm } from './CategoryForm'
-import {
-  useCategories,
-  useCategory,
-  useDeleteCategory,
-} from './hooks'
+import { useCategories, useCategory, useDeleteCategory } from './hooks'
 
 export interface CategorySidebarProps {
   selectedId: number | null
   onSelectChange: (id: number | null) => void
 }
 
-export function CategorySidebar({
-  selectedId,
-  onSelectChange,
-}: CategorySidebarProps) {
-
+export function CategorySidebar({ selectedId, onSelectChange }: CategorySidebarProps) {
   const [formOpen, setFormOpen] = useState(false)
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null)
 
@@ -40,7 +31,7 @@ export function CategorySidebar({
   }
   const handleDeleteCategory = (id: number) => {
     const confirmed = confirm(
-      'Delete this category? Tasks in it will become uncategorised.'
+      'Delete this category? Tasks in it will become uncategorised.',
     )
     if (!confirmed) return
     deleteMutation.mutate(id)
@@ -89,8 +80,7 @@ export function CategorySidebar({
     />
   )
 
-  const emptyState =
-    categoriesQuery.isSuccess &&
+  const emptyState = categoriesQuery.isSuccess &&
     categoriesQuery.data.results.length === 0 && (
       <EmptyState
         title="No categories"
@@ -98,8 +88,7 @@ export function CategorySidebar({
       />
     )
 
-  const categoryList =
-    categoriesQuery.isSuccess &&
+  const categoryList = categoriesQuery.isSuccess &&
     categoriesQuery.data.results.length > 0 && (
       <div className="space-y-0.5">
         {categoriesQuery.data.results.map((cat) => (
@@ -118,9 +107,7 @@ export function CategorySidebar({
 
   const modalContent = (() => {
     if (editingCategoryId === null) {
-      return <CategoryForm
-        onSuccess={handleCloseForm}
-        onCancel={handleCloseForm} />
+      return <CategoryForm onSuccess={handleCloseForm} onCancel={handleCloseForm} />
     }
     if (editingCategoryQuery.isLoading || !editingCategoryQuery.data) {
       return (
@@ -147,7 +134,6 @@ export function CategorySidebar({
       {modalContent}
     </Modal>
   )
-
 
   return (
     <aside className="space-y-3">

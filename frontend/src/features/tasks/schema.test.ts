@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 
 import { TaskFormSchema } from './schema'
 
-
 // Test payload
 const validInput = {
   title: 'Write tests',

@@ -1,4 +1,3 @@
-
 import type { ApiError } from '../api/client'
 
 export interface ErrorBannerProps {

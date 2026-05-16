@@ -1,14 +1,18 @@
-
-import {type QueryKey, useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {
+  type QueryKey,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import * as categoriesApi from '../../api/categories'
-import type {Category, CategoryCreatePayload, Paginated} from "../../types";
-import type {ApiError} from "../../api/client.ts";
+import type { Category, CategoryCreatePayload, Paginated } from '../../types'
+import type { ApiError } from '../../api/client.ts'
 
 // Cache key factory
 export const categoryKeys = {
-    all: ['categories'] as const,
-    lists: () => [...categoryKeys.all, 'list'] as const,
-    detail: (id: number) => [...categoryKeys.all, 'detail', id] as const,
+  all: ['categories'] as const,
+  lists: () => [...categoryKeys.all, 'list'] as const,
+  detail: (id: number) => [...categoryKeys.all, 'detail', id] as const,
 }
 
 const TASKS_KEY_PREFIX = ['tasks'] as const
@@ -34,15 +38,10 @@ export function useCategory(id: number) {
 export function useCreateCategory() {
   const qc = useQueryClient()
 
-  return useMutation<
-    Category,
-    ApiError,
-    CategoryCreatePayload>({
-      mutationFn: (payload) => categoriesApi.createCategory(payload),
-      onSuccess: () =>
-        qc.invalidateQueries({ queryKey: categoryKeys.lists() })
+  return useMutation<Category, ApiError, CategoryCreatePayload>({
+    mutationFn: (payload) => categoriesApi.createCategory(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: categoryKeys.lists() }),
   })
-
 }
 
 export function useUpdateCategory() {
@@ -51,10 +50,9 @@ export function useUpdateCategory() {
   return useMutation<
     Category,
     ApiError,
-    { id: number;
-      payload: CategoryCreatePayload },
+    { id: number; payload: CategoryCreatePayload },
     { previous: CategoryListSnapshot }
-    > ({
+  >({
     mutationFn: ({ id, payload }) => categoriesApi.updateCategory(id, payload),
 
     onMutate: async ({ id, payload }) => {
@@ -69,46 +67,30 @@ export function useUpdateCategory() {
           if (!old) return old
           return {
             ...old,
-            results: old.results.map((c) =>
-              c.id === id ?
-                { ...c, ...payload }
-                : c
-            ),
+            results: old.results.map((c) => (c.id === id ? { ...c, ...payload } : c)),
           }
-        }
+        },
       )
       return { previous }
     },
 
-    onError: (
-      _err,
-      _vars, context
-    ) => {
+    onError: (_err, _vars, context) => {
       if (!context) return
       for (const [key, value] of context.previous) {
         qc.setQueryData(key, value)
       }
     },
 
-    onSettled:(
-      _data,
-      _err,
-      { id }
-    ) => {
+    onSettled: (_data, _err, { id }) => {
       qc.invalidateQueries({ queryKey: categoryKeys.lists() })
       qc.invalidateQueries({ queryKey: categoryKeys.detail(id) })
       qc.invalidateQueries({ queryKey: TASKS_KEY_PREFIX })
-    }
+    },
   })
 }
 export function useDeleteCategory() {
   const qc = useQueryClient()
-  return useMutation<
-    void,
-    ApiError,
-    number,
-    { previous: CategoryListSnapshot }
-  >({
+  return useMutation<void, ApiError, number, { previous: CategoryListSnapshot }>({
     mutationFn: (id) => categoriesApi.deleteCategory(id),
 
     onMutate: async (id) => {
@@ -126,7 +108,7 @@ export function useDeleteCategory() {
             count: Math.max(0, old.count - 1),
             results: old.results.filter((c) => c.id !== id),
           }
-        }
+        },
       )
 
       return { previous }

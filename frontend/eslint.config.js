@@ -1,4 +1,3 @@
-
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -13,11 +12,10 @@ export default tseslint.config(
   },
   {
     files: ['**/*.{ts,tsx}'],
-
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
+      reactHooks.configs.recommended,
       reactRefresh.configs.vite,
       jsxA11y.flatConfigs.recommended,
       prettier,
@@ -62,5 +60,5 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
     },
-  }
+  },
 )

@@ -1,4 +1,3 @@
-
 import type { TaskListItem, TaskStatus, TaskPriority } from '../../types'
 import { cn } from '../../lib/cn'
 
@@ -35,7 +34,7 @@ export function TaskCard({ task, onMarkDone, onDelete, isBusy }: TaskCardProps) 
     <article
       className={cn(
         'flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm',
-        isDone && 'opacity-60'
+        isDone && 'opacity-60',
       )}
     >
       <div className="min-w-0 flex-1">
@@ -43,7 +42,7 @@ export function TaskCard({ task, onMarkDone, onDelete, isBusy }: TaskCardProps) 
           <h3
             className={cn(
               'truncate text-base font-semibold text-slate-900',
-              isDone && 'line-through'
+              isDone && 'line-through',
             )}
           >
             {task.title}
@@ -51,7 +50,7 @@ export function TaskCard({ task, onMarkDone, onDelete, isBusy }: TaskCardProps) 
           <span
             className={cn(
               'inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
-              STATUS_STYLES[task.status]
+              STATUS_STYLES[task.status],
             )}
           >
             {STATUS_LABELS[task.status]}

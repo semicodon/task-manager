@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi } from 'vitest'
 
 import { TaskCard } from './TaskCard'
@@ -22,8 +21,8 @@ describe('TaskCard — display', () => {
     renderWithProviders(<TaskCard task={fixtureTask} />)
     expect(
       screen.getByRole('heading', {
-        name: 'Write the TaskCard test' }
-      )
+        name: 'Write the TaskCard test',
+      }),
     ).toBeInTheDocument()
   })
 
