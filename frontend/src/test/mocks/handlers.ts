@@ -1,4 +1,3 @@
-
 import { http, HttpResponse } from 'msw'
 import type { Category, Paginated, Task, TaskListItem } from '../../types'
 
@@ -63,48 +62,38 @@ function paginate<T>(items: T[]): Paginated<T> {
     count: items.length,
     next: null,
     previous: null,
-    results: items }
+    results: items,
+  }
 }
 
 export const handlers = [
   http.get('*/api/tasks/', ({ request }) => {
-
     const url = new URL(request.url)
     const status = url.searchParams.get('status')
     const category = url.searchParams.get('category')
 
     let results = mockTaskList
-    if (status) results = results.filter(
-      (t) => t.status === status
-    )
-    if (category) results = results.filter(
-      (t) => t.category === Number(category)
-    )
+    if (status) results = results.filter((t) => t.status === status)
+    if (category) results = results.filter((t) => t.category === Number(category))
 
     return HttpResponse.json(paginate(results))
   }),
 
-
-  http.get('*/api/tasks/:id/', (
-    { params }) => {
-    const task = mockTaskList.find(
-      (t) => t.id === Number(params.id)
-    )
+  http.get('*/api/tasks/:id/', ({ params }) => {
+    const task = mockTaskList.find((t) => t.id === Number(params.id))
     if (!task) return new HttpResponse(null, { status: 404 })
     return HttpResponse.json(task)
   }),
 
   // POST /api/tasks/ — create
-  http.post('*/api/tasks/', async (
-    { request }) => {
+  http.post('*/api/tasks/', async ({ request }) => {
     const body = (await request.json()) as Partial<Task>
     const created = { ...body, id: 999, created_at: new Date().toISOString() }
     return HttpResponse.json(created, { status: 201 })
   }),
 
   // PATCH /api/tasks/{id}/ — update
-  http.patch('*/api/tasks/:id/', async (
-    { request, params }) => {
+  http.patch('*/api/tasks/:id/', async ({ request, params }) => {
     const body = (await request.json()) as Partial<Task>
     const updated = { ...body, id: Number(params.id) }
     return HttpResponse.json(updated)
@@ -114,8 +103,7 @@ export const handlers = [
   http.delete('*/api/tasks/:id/', () => new HttpResponse(null, { status: 204 })),
 
   // POST /api/tasks/{id}/mark-done/
-  http.post('*/api/tasks/:id/mark-done/', (
-    { params }) => {
+  http.post('*/api/tasks/:id/mark-done/', ({ params }) => {
     const task = mockTaskList.find((t) => t.id === Number(params.id))
     if (!task) return new HttpResponse(null, { status: 404 })
     return HttpResponse.json({ ...task, status: 'done' })
@@ -125,8 +113,7 @@ export const handlers = [
   http.get('*/api/categories/', () => HttpResponse.json(paginate(mockCategories))),
 
   // GET /api/categories/{id}/
-  http.get('*/api/categories/:id/', (
-    { params }) => {
+  http.get('*/api/categories/:id/', ({ params }) => {
     const cat = mockCategories.find((c) => c.id === Number(params.id))
     if (!cat) return new HttpResponse(null, { status: 404 })
     return HttpResponse.json(cat)

@@ -6,17 +6,12 @@ import { EmptyState } from '../../components/EmptyState'
 import { Modal } from '../../components/Modal'
 import { TaskCard } from './TaskCard'
 import { TaskForm } from './TaskForm'
-import {
-  useTasks,
-  useTask,
-  useMarkTaskDone,
-  useDeleteTask,
-} from './hooks'
+import { useTasks, useTask, useMarkTaskDone, useDeleteTask } from './hooks'
 import type { TaskListParams } from '../../api/tasks'
 import type { TaskStatus } from '../../types'
 
 const STATUS_TABS: Array<{ label: string; value?: TaskStatus }> = [
-  { label: 'All' },                          // undefined → no filter
+  { label: 'All' }, // undefined → no filter
   { label: 'To Do', value: 'todo' },
   { label: 'In Progress', value: 'in_progress' },
   { label: 'Done', value: 'done' },
@@ -27,7 +22,6 @@ export interface TaskListProps {
 }
 
 export function TaskList({ categoryFilter }: TaskListProps = {}) {
-
   const [statusFilter, setStatusFilter] = useState<TaskStatus | undefined>()
 
   const [formOpen, setFormOpen] = useState(false)
@@ -43,17 +37,16 @@ export function TaskList({ categoryFilter }: TaskListProps = {}) {
   const deleteTask = useDeleteTask()
   const editingTaskQuery = useTask(editingTaskId ?? 0)
   const handleNewTask = () => {
-    setEditingTaskId(null)   // null → create mode
+    setEditingTaskId(null) // null → create mode
     setFormOpen(true)
   }
   const handleEditTask = (id: number) => {
-    setEditingTaskId(id)     // number → edit mode 
+    setEditingTaskId(id) // number → edit mode
     setFormOpen(true)
   }
   const handleCloseForm = () => {
     setFormOpen(false)
   }
-
 
   // Status filter buttons
   const statusButtons = STATUS_TABS.map((tab) => {
@@ -67,9 +60,7 @@ export function TaskList({ categoryFilter }: TaskListProps = {}) {
         onClick={() => setStatusFilter(tab.value)}
         className={
           'rounded-md px-3 py-1 font-medium transition ' +
-          (active
-            ? 'bg-slate-900 text-white'
-            : 'text-slate-600 hover:bg-slate-100')
+          (active ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100')
         }
       >
         {tab.label}
@@ -90,50 +81,48 @@ export function TaskList({ categoryFilter }: TaskListProps = {}) {
   )
 
   // Empty state
-  const emptyState =
-    !isLoading && !isError && data && data.results.length === 0 && (
-      <EmptyState
-        title="No tasks yet"
-        description={
-          statusFilter
-            ? `No tasks with status "${statusFilter}". Try a different filter.`
-            : 'Click "+ New Task" above to create your first one.'
-        }
-        action={
-          !statusFilter && (
-            <button
-              type="button"
-              onClick={handleNewTask}
-              className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
-            >
-              + New Task
-            </button>
-          )
-        }
-      />
-    )
+  const emptyState = !isLoading && !isError && data && data.results.length === 0 && (
+    <EmptyState
+      title="No tasks yet"
+      description={
+        statusFilter
+          ? `No tasks with status "${statusFilter}". Try a different filter.`
+          : 'Click "+ New Task" above to create your first one.'
+      }
+      action={
+        !statusFilter && (
+          <button
+            type="button"
+            onClick={handleNewTask}
+            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+          >
+            + New Task
+          </button>
+        )
+      }
+    />
+  )
 
   // Task list
-  const taskList =
-    !isLoading && !isError && data && data.results.length > 0 && (
-      <ul className="space-y-3">
-        {data.results.map((task) => (
-          <li key={task.id}>
-            <TaskCard
-              task={task}
-              onMarkDone={(id) => markDone.mutate(id)}
-              onEdit={handleEditTask}
-              onDelete={(id) => {
-                if (confirm('Delete this task? This cannot be undone.')) {
-                  deleteTask.mutate(id)
-                }
-              }}
-              isBusy={markDone.isPending || deleteTask.isPending}
-            />
-          </li>
-        ))}
-      </ul>
-    )
+  const taskList = !isLoading && !isError && data && data.results.length > 0 && (
+    <ul className="space-y-3">
+      {data.results.map((task) => (
+        <li key={task.id}>
+          <TaskCard
+            task={task}
+            onMarkDone={(id) => markDone.mutate(id)}
+            onEdit={handleEditTask}
+            onDelete={(id) => {
+              if (confirm('Delete this task? This cannot be undone.')) {
+                deleteTask.mutate(id)
+              }
+            }}
+            isBusy={markDone.isPending || deleteTask.isPending}
+          />
+        </li>
+      ))}
+    </ul>
+  )
 
   const newTaskButton = (
     <button
@@ -147,12 +136,7 @@ export function TaskList({ categoryFilter }: TaskListProps = {}) {
 
   const modalContent = (() => {
     if (editingTaskId === null) {
-      return (
-        <TaskForm
-          onSuccess={handleCloseForm}
-          onCancel={handleCloseForm}
-        />
-      )
+      return <TaskForm onSuccess={handleCloseForm} onCancel={handleCloseForm} />
     }
     if (editingTaskQuery.isLoading || !editingTaskQuery.data) {
       return (
@@ -189,9 +173,7 @@ export function TaskList({ categoryFilter }: TaskListProps = {}) {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">Tasks</h2>
-          <p className="text-sm text-slate-500">
-            Connected to Django API · live data
-          </p>
+          <p className="text-sm text-slate-500">Connected to Django API · live data</p>
         </div>
 
         <div className="flex items-center gap-2">

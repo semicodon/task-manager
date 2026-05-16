@@ -12,17 +12,11 @@ function makeWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
-      mutations: { retry: false }
+      mutations: { retry: false },
     },
   })
-  return function Wrapper(
-    { children }: {
-      children: ReactNode
-    }
-  ) {
-    return (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    )
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   }
 }
 
@@ -51,9 +45,7 @@ describe('useTasks', () => {
   })
 
   it('returns isError when the server returns a 500', async () => {
-    server.use(
-      http.get('*/api/tasks/', () => new HttpResponse(null, { status: 500 }))
-    )
+    server.use(http.get('*/api/tasks/', () => new HttpResponse(null, { status: 500 })))
 
     const { result } = renderHook(() => useTasks(), { wrapper: makeWrapper() })
     await waitFor(() => expect(result.current.isError).toBe(true))

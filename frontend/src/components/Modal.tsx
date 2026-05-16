@@ -10,7 +10,6 @@ export interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children, footer }: ModalProps) {
-
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -22,7 +21,6 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       dialog.close()
     }
   }, [open])
-
 
   return (
     <dialog

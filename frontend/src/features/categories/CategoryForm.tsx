@@ -18,11 +18,7 @@ export interface CategoryFormProps {
   onCancel?: () => void
 }
 
-export function CategoryForm({
-  category,
-  onSuccess,
-  onCancel,
-}: CategoryFormProps) {
+export function CategoryForm({ category, onSuccess, onCancel }: CategoryFormProps) {
   const form = useForm({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: buildDefaults(category),
@@ -34,40 +30,38 @@ export function CategoryForm({
   const updateMutation = useUpdateCategory()
   const submitting = createMutation.isPending || updateMutation.isPending
 
-
   useEffect(() => {
     form.reset(buildDefaults(category))
   }, [category, form])
 
-  const onSubmit = form.handleSubmit(
-    async (values) => {
-      const payload = toApiPayload(values)
-      try {
-        let saved: Category
-        if (isEdit && category) {
-          saved = await updateMutation.mutateAsync({
-            id: category.id,
-            payload })
-        } else {
-          saved = await createMutation.mutateAsync(payload)
-        }
-        form.reset(buildDefaults())
-        onSuccess?.(saved)
-      } catch (err) {
-        const apiError = err as ApiError
-        if (apiError.fieldErrors) {
-          for (const [field, messages] of Object.entries(apiError.fieldErrors)) {
-            form.setError(field as keyof CategoryFormValues, {
-              type: 'server',
-              message: Array.isArray(messages) ? messages.join(' ') : String(messages),
-            })
-          }
-        } else {
-          form.setError('root', { type: 'server', message: apiError.message })
-        }
+  const onSubmit = form.handleSubmit(async (values) => {
+    const payload = toApiPayload(values)
+    try {
+      let saved: Category
+      if (isEdit && category) {
+        saved = await updateMutation.mutateAsync({
+          id: category.id,
+          payload,
+        })
+      } else {
+        saved = await createMutation.mutateAsync(payload)
       }
+      form.reset(buildDefaults())
+      onSuccess?.(saved)
+    } catch (err) {
+      const apiError = err as ApiError
+      if (apiError.fieldErrors) {
+        for (const [field, messages] of Object.entries(apiError.fieldErrors)) {
+          form.setError(field as keyof CategoryFormValues, {
+            type: 'server',
+            message: Array.isArray(messages) ? messages.join(' ') : String(messages),
+          })
+        }
+      } else {
+        form.setError('root', { type: 'server', message: apiError.message })
+      }
+    }
   })
-
 
   const errorFor = (field: keyof CategoryFormValues) => {
     const message = form.formState.errors[field]?.message
@@ -120,7 +114,9 @@ export function CategoryForm({
 
   const colorField = (
     <div>
-      <label htmlFor="color" className={labelClass}>Color</label>
+      <label htmlFor="color" className={labelClass}>
+        Color
+      </label>
       <div className="flex items-center gap-3">
         <input
           id="color"
@@ -128,19 +124,14 @@ export function CategoryForm({
           className="h-10 w-14 cursor-pointer rounded border border-slate-300 bg-white p-1"
           {...form.register('color')}
         />
-        <code className="text-xs text-slate-500">
-          {form.watch('color')}
-        </code>
+        <code className="text-xs text-slate-500">{form.watch('color')}</code>
       </div>
       {errorFor('color')}
     </div>
   )
 
   const rootError = form.formState.errors.root && (
-    <p
-      className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
-      role="alert"
-    >
+    <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
       {form.formState.errors.root.message}
     </p>
   )
@@ -192,7 +183,7 @@ function buildDefaults(category?: Category): CategoryFormValues {
 }
 
 function toApiPayload(
-  values: CategoryFormValues
+  values: CategoryFormValues,
 ): CategoryCreatePayload & CategoryUpdatePayload {
   return {
     name: values.name.trim(),
