@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 load_dotenv()
 
@@ -25,6 +27,9 @@ INSTALLED_APPS = [
     "django_filters",   # Enables ?status=todo URL filtering
     "corsheaders",      # Allows React frontend to call this API
     "tasks.apps.TasksConfig",
+    "rest_framework_simplejwt.token_blacklist",
+    "tasks",
+    "accounts"
 ]
 
 
@@ -89,6 +94,12 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",   # Enables ?search=keyword
@@ -104,3 +115,12 @@ CORS_ALLOWED_ORIGINS = [
         "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
     ).split(",")
 ]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME":  timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS":    True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "SIGNING_KEY": SECRET_KEY,
+}
