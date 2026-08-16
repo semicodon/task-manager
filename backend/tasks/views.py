@@ -25,6 +25,23 @@ class CategoryViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'created_at']
     ordering = ['name']
 
+    def get_queryset(self):
+        """
+        filter all reads by the current user rel to them only.
+
+        super().get_queryset() reads the class-level `queryset` (above), applies any router-level filters, and returns a QuerySet.
+         -> chain a `.filter(user=...)` on top; lazy-evaluates with the rest.
+        """
+        return super().get_queryset().filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """
+        SET user automatically on every create. perform_create() is DRF's hook that runs right BEFORE the new instance is saved. Setting the user here prevents the classic vulnerability where a client POSTs {"user": some_other_id} to create categories for someone else.
+
+        Note we pass user= to serializer.save(), NOT to the serialiser's validated_data — DRF threads extra kwargs through to the .create() method on the model.
+        """
+        serializer.save(user=self.request.user)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -48,9 +65,11 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Task.objects.select_related('category').all()
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter,
-                       filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter
+    ]
     exact = ['exact']
     filterset_fields = {
         'status': exact,
@@ -84,8 +103,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         - <field>__<lookup> (e.g., due_date__lt) -> specify how to lookup query
         :return: queryset
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(
+            user=self.request.user,     # * each user only sees own tasks
+        )
 
+        # allow filter by 'overdue'ness
         overdue_param = self.request.query_params.get('overdue')
         if overdue_param is not None:
             today = timezone.now().date()
@@ -97,6 +119,9 @@ class TaskViewSet(viewsets.ModelViewSet):
                 queryset = queryset.exclude(due_date__lt=today)
 
         return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     @action(
         detail=True,          # URL includes an ID (/tasks/{id}/)

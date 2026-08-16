@@ -13,6 +13,13 @@ class Category(models.Model):
     """
     tasks = None
 
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="categories",
+        help_text="The user who owns this category",
+    )
+
     name = models.CharField(
         max_length=100,
         unique=True,
@@ -41,6 +48,12 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
         ordering = ["name"]
+        constraints = [     # per-user uniqueness
+            models.UniqueConstraint(
+                fields=["user", "name"],
+                name="unique_category_name_per_user",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
@@ -78,6 +91,12 @@ class Task(models.Model):
     created_at: models.DateTimeField
     updated_at: models.DateTimeField
     """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="tasks",
+        help_text="The user who owns this task",
+    )
     title = models.CharField(
         max_length=200,
         help_text='Task title'
