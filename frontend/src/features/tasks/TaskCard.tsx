@@ -1,5 +1,5 @@
 import type { TaskListItem, TaskStatus, TaskPriority } from '../../types'
-import { cn } from '../../lib/cn'
+import { cn } from "../../lib/cn"
 
 export interface TaskCardProps {
   task: TaskListItem

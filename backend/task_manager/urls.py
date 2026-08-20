@@ -1,6 +1,11 @@
 
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework_simplejwt.views import (
+    TokenBlacklistView,        # POST {refresh} → revokes the refresh token
+    TokenObtainPairView,       # POST {username, password} → {access, refresh}
+    TokenRefreshView,          # POST {refresh} → {access, refresh}
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
