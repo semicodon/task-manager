@@ -88,13 +88,40 @@ export interface TaskCreatePayload {
 }
 export type TaskUpdatePayload = Partial<TaskCreatePayload>
 
-// ─── Paginated Responses ────────────────────────────────────────────────────────────────
-/**
- * interface Paginated
- */
 export interface Paginated<T> {
   count: number
   next: string | null
   previous: string | null
   results: T[]
+}
+export interface User {
+  id: number
+  username: string
+  email: string
+  date_joined: string // ISO 8601 timestamp
+}
+
+// /api/auth/login/ and /api/auth/refresh/ return
+export interface AuthTokens {
+  access: string
+  refresh: string
+}
+
+// /api/auth/register/ returns.
+export interface RegisterResponse {
+  username: string
+  email: string
+  tokens: AuthTokens
+}
+
+// Payloads sent to the auth endpoints.
+export interface LoginPayload {
+  username: string
+  password: string
+}
+
+export interface RegisterPayload {
+  username: string
+  email: string
+  password: string
 }
